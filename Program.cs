@@ -19,8 +19,13 @@ builder.Services.AddRazorPages();
 
 // custom services
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
+builder.Services.AddTransient<SeedService>();
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
+.AddEntityFrameworkStores<ApplicationDbContext>();
 
 var app = builder.Build();
+var dataService = app.Services.CreateScope().ServiceProvider.GetRequiredService<SeedService>();
+await dataService.ManageDataAsync();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
