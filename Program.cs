@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using WhatMovie.Data;
 using WhatMovie.Models.Settings;
 using WhatMovie.Services;
+using WhatMovie.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,15 +14,17 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+.AddRoles<IdentityRole>()
+.AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
 // custom services
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 builder.Services.AddTransient<SeedService>();
-builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
-.AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<IRemoteMovieService, TMDBMovieService>();
+builder.Services.AddScoped<IDataMappingService, TMDBMappingService>();
 
 var app = builder.Build();
 var dataService = app.Services.CreateScope().ServiceProvider.GetRequiredService<SeedService>();

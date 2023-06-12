@@ -40,7 +40,7 @@ namespace WhatMovie.Services
             // if any roles exist in database exit function
             if (_dbContext.Roles.Any()) return;
 
-            var adminRole = _appSettings.WhatMovieSettings?.DefaultCredentials?.DefaultRole;
+            var adminRole = _appSettings.WhatMovieSettings?.DefaultCredentials?.Role;
 
             await _roleManager.CreateAsync(new IdentityRole(adminRole));
         }
@@ -54,13 +54,13 @@ namespace WhatMovie.Services
             
             var newUser = new IdentityUser()
             {
-                Email = credentials.DefaultEmail,
-                UserName = credentials.DefaultEmail,
+                Email = credentials.Email,
+                UserName = credentials.Email,
                 EmailConfirmed = true
             };
 
-            await _userManager.CreateAsync(newUser, credentials.DefaultPassword);
-            await _userManager.AddToRoleAsync(newUser, credentials.DefaultRole);
+            await _userManager.CreateAsync(newUser, credentials.Password);
+            await _userManager.AddToRoleAsync(newUser, credentials.Role);
         }
 
         private async Task SeedCollections()

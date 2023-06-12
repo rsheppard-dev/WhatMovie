@@ -19,8 +19,8 @@ namespace WhatMovie.Models.Settings
 
     public class DefaultCredentials
     {
-        public string? DefaultRole { get; set; }
-        public string? DefaultEmail { get; set; }
-        public string? DefaultPassword { get; set; }
+        public string? Role { get; set; }
+        public string? Email { get; set; }
+        public string? Password { get; set; }
     }
 }
