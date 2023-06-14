@@ -62,6 +62,12 @@ namespace WhatMovie.Controllers
             return RedirectToAction("Import");
         }
 
+        public async Task<IActionResult> Library()
+        {
+            var movies = await _context.Movies!.ToListAsync();
+            return View(movies);
+        }
+
         private async Task AddToMovieCollection(int movieId, string collectionName)
         {
             var collection = await _context.Collections!.FirstOrDefaultAsync(c => c.Name == collectionName);
