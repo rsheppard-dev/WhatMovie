@@ -4,7 +4,7 @@ namespace WhatMovie.Services
 {
     public class ConnectionService
     {
-        public static string GetConnectionString(IConfiguration config)
+        public static string? GetConnectionString(IConfiguration config)
         {
             var connectionString = config.GetSection("PGSettings")["ConnectionString"];
             var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
