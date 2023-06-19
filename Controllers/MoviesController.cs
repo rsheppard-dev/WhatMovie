@@ -1,4 +1,3 @@
-using MessagePack.Formatters;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -176,6 +175,35 @@ namespace WhatMovie.Controllers
 
             return RedirectToAction("Library", "Movies");
         }
+
+        public async Task<IActionResult> Details(int? id, bool local = false)
+        {
+            if (id == null || _context.Movies == null) return NotFound();
+
+            Movie? movie = new();
+
+            if (local)
+            {
+                // Get the movie data from the database
+                movie = await _context.Movies
+                    .Include(movie => movie.Cast)
+                    .Include(movie => movie.Crew)
+                    .FirstOrDefaultAsync(movie => movie.Id == id);
+            }
+            else
+            {
+                // Get the movie data from the TMDB API
+                var movieDetail = await _tmdbMovieService.MovieDetailAsync((int)id);
+                movie = await _tmdbMappingService.MapMovieDetailAsync(movieDetail);
+            }
+
+            if (movie == null) return NotFound();
+
+            ViewData["Local"] = local;
+
+            return View(movie);
+        }
+
         private async Task AddToMovieCollection(int movieId, string collectionName)
         {
             var collection = await _context.Collections!.FirstOrDefaultAsync(c => c.Name == collectionName);
