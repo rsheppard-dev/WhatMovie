@@ -30,7 +30,7 @@ namespace WhatMovie.Services
             
             var queryParams = new Dictionary<string, string>()
             {
-                { "api_key", _configuration.GetSection("APiSettings")["TMDBApiKey"]! },
+                { "api_key", _configuration.GetSection("ApiSettings")["TMDBApiKey"]! },
                 { "language", _appSettings.TMDBSettings.QueryOptions!.Language! },
             };
 
@@ -62,7 +62,7 @@ namespace WhatMovie.Services
             
             var queryParams = new Dictionary<string, string>()
             {
-                { "api_key", _configuration.GetSection("APiSettings")["TMDBApiKey"]! },
+                { "api_key", _configuration.GetSection("ApiSettings")["TMDBApiKey"]! },
                 { "language", _appSettings.TMDBSettings.QueryOptions!.Language! },
                 { "append_to_response", _appSettings.TMDBSettings.QueryOptions.AppendToResponse! }
             };
@@ -95,7 +95,7 @@ namespace WhatMovie.Services
             
             var queryParams = new Dictionary<string, string>()
             {
-                { "api_key", _configuration.GetSection("APiSettings")["TMDBApiKey"]! },
+                { "api_key", _configuration.GetSection("ApiSettings")["TMDBApiKey"]! },
                 { "language", _appSettings.TMDBSettings.QueryOptions!.Language! },
                 { "page", _appSettings.TMDBSettings.QueryOptions.Page! }
             };

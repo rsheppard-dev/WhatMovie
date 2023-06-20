@@ -4,8 +4,14 @@
     ViewData["Title"] = "What Movie";
 }
 
+@if (Model.Upcoming?.Results == null)
+{
+    <div>No data received!</div>
+}
+else
+{
 <div class="row">
-    @foreach (var movie in Model.Upcoming!.Results!)
+    @foreach (var movie in Model.Upcoming!.Results)
     {
    <div class="col-sm-3 mb-2">
         <div class="card" style="width: 18rem;">
@@ -19,4 +25,5 @@
     </div>
     }
 </div>
+}
 
