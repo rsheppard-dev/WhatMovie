@@ -1,5 +1,6 @@
 using System.Runtime.Serialization.Json;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Build.Framework;
 using Microsoft.Extensions.Options;
 using WhatMovie.Enums;
 using WhatMovie.Models.Settings;
@@ -12,10 +13,12 @@ namespace WhatMovie.Services
     {
         private readonly AppSettings _appSettings;
         private readonly IHttpClientFactory _httpClient;
-        public TMDBMovieService(IOptions<AppSettings> appSettings, IHttpClientFactory httpClient)
+        private readonly IConfiguration _configuration;
+        public TMDBMovieService(IOptions<AppSettings> appSettings, IHttpClientFactory httpClient, IConfiguration configuration)
         {
             _appSettings = appSettings.Value;
             _httpClient = httpClient;
+            _configuration = configuration;
         }
         public async Task<ActorDetail> ActorDetailAsync(int id)
         {
@@ -27,7 +30,7 @@ namespace WhatMovie.Services
             
             var queryParams = new Dictionary<string, string>()
             {
-                { "api_key", _appSettings.WhatMovieSettings!.TMDBApiKey! },
+                { "api_key", _configuration.GetSection("APiSettings")["TMDBApiKey"]! },
                 { "language", _appSettings.TMDBSettings.QueryOptions!.Language! },
             };
 
@@ -59,7 +62,7 @@ namespace WhatMovie.Services
             
             var queryParams = new Dictionary<string, string>()
             {
-                { "api_key", _appSettings.WhatMovieSettings!.TMDBApiKey! },
+                { "api_key", _configuration.GetSection("APiSettings")["TMDBApiKey"]! },
                 { "language", _appSettings.TMDBSettings.QueryOptions!.Language! },
                 { "append_to_response", _appSettings.TMDBSettings.QueryOptions.AppendToResponse! }
             };
@@ -92,7 +95,7 @@ namespace WhatMovie.Services
             
             var queryParams = new Dictionary<string, string>()
             {
-                { "api_key", _appSettings.WhatMovieSettings!.TMDBApiKey! },
+                { "api_key", _configuration.GetSection("APiSettings")["TMDBApiKey"]! },
                 { "language", _appSettings.TMDBSettings.QueryOptions!.Language! },
                 { "page", _appSettings.TMDBSettings.QueryOptions.Page! }
             };
