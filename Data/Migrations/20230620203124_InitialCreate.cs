@@ -6,8 +6,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace WhatMovie.Data.Migrations
 {
-    public partial class Collection : Migration
+    /// <inheritdoc />
+    public partial class InitialCreate : Migration
     {
+        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -64,7 +66,7 @@ namespace WhatMovie.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Movie",
+                name: "Movies",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -85,7 +87,7 @@ namespace WhatMovie.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Movie", x => x.Id);
+                    table.PrimaryKey("PK_Movies", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -211,9 +213,9 @@ namespace WhatMovie.Data.Migrations
                 {
                     table.PrimaryKey("PK_MovieCast", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_MovieCast_Movie_MovieId",
+                        name: "FK_MovieCast_Movies_MovieId",
                         column: x => x.MovieId,
-                        principalTable: "Movie",
+                        principalTable: "Movies",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -238,9 +240,9 @@ namespace WhatMovie.Data.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_MovieCollection_Movie_MovieId",
+                        name: "FK_MovieCollection_Movies_MovieId",
                         column: x => x.MovieId,
-                        principalTable: "Movie",
+                        principalTable: "Movies",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -262,9 +264,9 @@ namespace WhatMovie.Data.Migrations
                 {
                     table.PrimaryKey("PK_MovieCrew", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_MovieCrew_Movie_MovieId",
+                        name: "FK_MovieCrew_Movies_MovieId",
                         column: x => x.MovieId,
-                        principalTable: "Movie",
+                        principalTable: "Movies",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -327,6 +329,7 @@ namespace WhatMovie.Data.Migrations
                 column: "MovieId");
         }
 
+        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
@@ -363,7 +366,7 @@ namespace WhatMovie.Data.Migrations
                 name: "Collections");
 
             migrationBuilder.DropTable(
-                name: "Movie");
+                name: "Movies");
         }
     }
 }

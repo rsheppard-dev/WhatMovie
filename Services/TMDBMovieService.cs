@@ -1,6 +1,6 @@
 using System.Runtime.Serialization.Json;
+using System.Text.Json;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Build.Framework;
 using Microsoft.Extensions.Options;
 using WhatMovie.Enums;
 using WhatMovie.Models.Settings;
@@ -87,9 +87,6 @@ namespace WhatMovie.Services
 
         public async Task<MovieSearch> SearchMovieAsync(MovieCategory category, int count)
         {
-            // Setup a default instance of MovieSearch
-            MovieSearch movieSearch = new();
-
             // Assemble a full request uri string
             var query = $"{_appSettings.TMDBSettings!.BaseUrl}/movie/{category}";
             
@@ -103,22 +100,25 @@ namespace WhatMovie.Services
             var requestUri = QueryHelpers.AddQueryString(query, queryParams!);
 
             // Create a client and exexute the request
-            var client = _httpClient.CreateClient();
-            var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
-            var response = await client.SendAsync(request);
+            using var client = _httpClient.CreateClient();
+            using var response = await client.GetAsync(requestUri);
 
             // Return the MovieSearch object
             if (response.IsSuccessStatusCode)
             {
-                var dcjs = new DataContractJsonSerializer(typeof(MovieSearch));
                 using var responseStream = await response.Content.ReadAsStreamAsync();
+                var movieSearch = await JsonSerializer.DeserializeAsync<MovieSearch>(responseStream);
+
+                if (movieSearch != null)
+                {
+                    movieSearch.Results = movieSearch.Results?.Take(count).ToArray();
+                    movieSearch.Results?.ToList().ForEach(r => r.PosterPath = $"{_appSettings.TMDBSettings.BaseImagePath}/{_appSettings.WhatMovieSettings!.DefaultPosterSize}/{r.PosterPath}");
                 
-                movieSearch = (MovieSearch)dcjs.ReadObject(responseStream)!;
-                movieSearch.Results = movieSearch.Results?.Take(count).ToArray();
-                movieSearch.Results?.ToList().ForEach(r => r.PosterPath = $"{_appSettings.TMDBSettings.BaseImagePath}/{_appSettings.WhatMovieSettings.DefaultPosterSize}/{r.PosterPath}");
+                    return movieSearch;
+                }
             }
 
-            return movieSearch;
+            return new MovieSearch();
         }
     }
 }
