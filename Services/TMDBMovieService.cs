@@ -22,9 +22,6 @@ namespace WhatMovie.Services
         }
         public async Task<ActorDetail> ActorDetailAsync(int id)
         {
-            // Setup a default instance of ActorDetail
-            ActorDetail actorDetail = new();
-
             // Assemble a full request uri string
             var query = $"{_appSettings.TMDBSettings!.BaseUrl}/person/{id}";
             
@@ -36,27 +33,24 @@ namespace WhatMovie.Services
 
             var requestUri = QueryHelpers.AddQueryString(query, queryParams!);
 
-            // Create a client and exexute the request
+            // Create a client and execute the request
             var client = _httpClient.CreateClient();
-            var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
-            var response = await client.SendAsync(request);
+            using var response = await client.GetAsync(requestUri);
 
             // Return the ActorDetail object
             if (response.IsSuccessStatusCode)
             {
-                var dcjs = new DataContractJsonSerializer(typeof(ActorDetail));
                 using var responseStream = await response.Content.ReadAsStreamAsync();
-                actorDetail = (ActorDetail)dcjs.ReadObject(responseStream)!;
+                var actorDetail = await JsonSerializer.DeserializeAsync<ActorDetail>(responseStream);
+
+                if (actorDetail is not null) return actorDetail;
             }
 
-            return actorDetail;
+            return new ActorDetail();
         }
 
         public async Task<MovieDetail> MovieDetailAsync(int id)
         {
-            // Setup a default instance of MovieDetail
-            MovieDetail movieDetail = new();
-
             // Assemble a full request uri string
             var query = $"{_appSettings.TMDBSettings!.BaseUrl}/movie/{id}";
             
@@ -69,20 +63,20 @@ namespace WhatMovie.Services
 
             var requestUri = QueryHelpers.AddQueryString(query, queryParams!);
 
-            // Create a client and exexute the request
-            var client = _httpClient.CreateClient();
-            var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
-            var response = await client.SendAsync(request);
+            // Create a client and execute the request
+            using var client = _httpClient.CreateClient();
+            using var response = await client.GetAsync(requestUri);
 
             // Return the MovieDetail object
             if (response.IsSuccessStatusCode)
             {
-                var dcjs = new DataContractJsonSerializer(typeof(MovieDetail));
                 using var responseStream = await response.Content.ReadAsStreamAsync();
-                movieDetail = (MovieDetail)dcjs.ReadObject(responseStream)!;
+                var movieDetail = await JsonSerializer.DeserializeAsync<MovieDetail>(responseStream);
+
+                if (movieDetail is not null) return movieDetail;
             }
 
-            return movieDetail!;
+            return new MovieDetail();
         }
 
         public async Task<MovieSearch> SearchMovieAsync(MovieCategory category, int count)
@@ -99,7 +93,7 @@ namespace WhatMovie.Services
 
             var requestUri = QueryHelpers.AddQueryString(query, queryParams!);
 
-            // Create a client and exexute the request
+            // Create a client and execute the request
             using var client = _httpClient.CreateClient();
             using var response = await client.GetAsync(requestUri);
 
@@ -109,7 +103,7 @@ namespace WhatMovie.Services
                 using var responseStream = await response.Content.ReadAsStreamAsync();
                 var movieSearch = await JsonSerializer.DeserializeAsync<MovieSearch>(responseStream);
 
-                if (movieSearch != null)
+                if (movieSearch is not null)
                 {
                     movieSearch.Results = movieSearch.Results?.Take(count).ToArray();
                     movieSearch.Results?.ToList().ForEach(r => r.PosterPath = $"{_appSettings.TMDBSettings.BaseImagePath}/{_appSettings.WhatMovieSettings!.DefaultPosterSize}/{r.PosterPath}");
