@@ -176,13 +176,14 @@ namespace WhatMovie.Controllers
             return RedirectToAction("Library", "Movies");
         }
 
+        [HttpGet]
         public async Task<IActionResult> Details(int? id, bool local = false)
         {
-            if (id == null || _context.Movies == null) return NotFound();
+            if (id == null) return NotFound();
 
             Movie? movie = new();
 
-            if (local)
+            if (local && _context.Movies is not null)
             {
                 // Get the movie data from the database
                 movie = await _context.Movies
@@ -197,7 +198,7 @@ namespace WhatMovie.Controllers
                 movie = await _tmdbMappingService.MapMovieDetailAsync(movieDetail);
             }
 
-            if (movie == null) return NotFound();
+            // if (movie == null) return NotFound();
 
             ViewData["Local"] = local;
 

@@ -53,8 +53,8 @@ namespace WhatMovie.Services
                     Overview = movie.Overview,
                     Runtime = movie.Runtime,
                     VoteAverage = movie.VoteAverage,
-                    ReleaseDate = DateTime.Parse(movie.ReleaseDate!),
-                    TrailerUrl = BuildTrailerPath(movie.Videos!),
+                    ReleaseDate = DateTime.Parse(movie.ReleaseDate),
+                    TrailerUrl = BuildTrailerPath(movie.Videos),
                     Backdrop = await EncodeBackdropImageAsync(movie.BackdropPath),
                     BackdropType = BuildImageType(movie.BackdropPath),
                     Poster = await EncodePosterImageAsync(movie.PosterPath),
@@ -66,7 +66,7 @@ namespace WhatMovie.Services
                     .GroupBy(c => c.CastId)
                     .Select(g => g.First())
                     .Take(20)
-                    .ToList()!;
+                    .ToList();
 
                 castMembers.ForEach(member =>
                 {
@@ -84,7 +84,7 @@ namespace WhatMovie.Services
                     .GroupBy(c => c.Id)
                     .Select(g => g.First())
                     .Take(20)
-                    .ToList()!;
+                    .ToList();
 
                 crewMembers.ForEach(member =>
                 {
@@ -153,8 +153,8 @@ namespace WhatMovie.Services
 
         private string? BuildTrailerPath(Videos videos)
         {
-            var videoKey = videos.Results?.FirstOrDefault(r => r.Type?.ToLower().Trim() == "trailer" && r.Key != "")?.Key;
-            return string.IsNullOrEmpty(videoKey) ? videoKey : $"{_appSettings.TMDBSettings?.BaseYouTubePath}{videoKey}";
+            var videoKey = videos.Results.FirstOrDefault(r => r.Type.ToLower().Trim() == "trailer" && r.Key != "").Key;
+            return string.IsNullOrEmpty(videoKey) ? videoKey : $"{_appSettings.TMDBSettings!.BaseYouTubePath}{videoKey}";
         }
     }
 }
