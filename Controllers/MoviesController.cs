@@ -198,7 +198,7 @@ namespace WhatMovie.Controllers
                 movie = await _tmdbMappingService.MapMovieDetailAsync(movieDetail);
             }
 
-            // if (movie == null) return NotFound();
+            if (movie == null) return NotFound();
 
             ViewData["Local"] = local;
 

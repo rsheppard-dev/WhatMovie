@@ -153,7 +153,7 @@ namespace WhatMovie.Services
 
         private string? BuildTrailerPath(Videos videos)
         {
-            var videoKey = videos.Results.FirstOrDefault(r => r.Type.ToLower().Trim() == "trailer" && r.Key != "").Key;
+            var videoKey = videos.Results.FirstOrDefault(video => video.Type.ToLower().Trim() == "trailer" && video.Key != "").Key;
             return string.IsNullOrEmpty(videoKey) ? videoKey : $"{_appSettings.TMDBSettings!.BaseYouTubePath}{videoKey}";
         }
     }
