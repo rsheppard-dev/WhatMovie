@@ -3,6 +3,7 @@ using WhatMovie.Models.Database;
 using WhatMovie.Models.Settings;
 using WhatMovie.Models.TMDB;
 using WhatMovie.Services.Interfaces;
+using Microsoft.Extensions.Options;
 
 namespace WhatMovie.Services
 {
@@ -11,9 +12,9 @@ namespace WhatMovie.Services
         private readonly AppSettings _appSettings;
         private readonly IImageService _imageService;
 
-        public TMDBMappingService(AppSettings appSettings, IImageService imageService)
+        public TMDBMappingService(IOptions<AppSettings> appSettings, IImageService imageService)
         {
-            _appSettings = appSettings;
+            _appSettings = appSettings.Value;
             _imageService = imageService;
         }
 
@@ -53,8 +54,8 @@ namespace WhatMovie.Services
                     Overview = movie.Overview,
                     Runtime = movie.Runtime,
                     VoteAverage = movie.VoteAverage,
-                    ReleaseDate = DateTime.Parse(movie.ReleaseDate),
-                    TrailerUrl = BuildTrailerPath(movie.Videos),
+                    ReleaseDate = DateTime.Parse(movie.ReleaseDate!),
+                    TrailerUrl = BuildTrailerPath(movie.Videos!),
                     Backdrop = await EncodeBackdropImageAsync(movie.BackdropPath),
                     BackdropType = BuildImageType(movie.BackdropPath),
                     Poster = await EncodePosterImageAsync(movie.PosterPath),
@@ -68,7 +69,7 @@ namespace WhatMovie.Services
                     .Take(20)
                     .ToList();
 
-                castMembers.ForEach(member =>
+                castMembers?.ForEach(member =>
                 {
                     newMovie.Cast.Add(new MovieCast()
                     {
@@ -86,7 +87,7 @@ namespace WhatMovie.Services
                     .Take(20)
                     .ToList();
 
-                crewMembers.ForEach(member =>
+                crewMembers?.ForEach(member =>
                 {
                     newMovie.Crew.Add(new MovieCrew()
                     {
@@ -153,8 +154,10 @@ namespace WhatMovie.Services
 
         private string? BuildTrailerPath(Videos videos)
         {
-            var videoKey = videos.Results.FirstOrDefault(video => video.Type.ToLower().Trim() == "trailer" && video.Key != "").Key;
-            return string.IsNullOrEmpty(videoKey) ? videoKey : $"{_appSettings.TMDBSettings!.BaseYouTubePath}{videoKey}";
+            var baseYouTubePath = _appSettings.TMDBSettings!.BaseYouTubePath;
+
+            var videoKey = videos.Results?.FirstOrDefault(video => video?.Type?.ToLower().Trim() == "trailer" && video.Key != "")?.Key;
+            return videoKey != null ? $"{baseYouTubePath}{videoKey}" : null;
         }
     }
 }

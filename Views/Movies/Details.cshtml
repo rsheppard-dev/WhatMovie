@@ -5,17 +5,16 @@
 @model Movie
 @{
     ViewData["Title"] = "What Movie - Details";
-    var imageSource = _imageService.DecodeImage(Model.Poster, Model.PosterType);
 }
 
-@if (Model?.Title is not null)
-{
 <div class="row">
     <div class="col-sm-12 col-md-6">
-        <div class="row">
-            <img src="@imageSource" class="w-100" alt="@Model.Title">
-        </div>
-
+        @if (Model.Poster is not null && Model.PosterType is not null)
+        {
+            <div class="row">
+                <img src="@_imageService.DecodeImage(Model.Poster, Model.PosterType)" class="w-100" alt="@Model.Title">
+            </div>
+        }
         <div class="row">
             <button class="btn btn-lg btn-danger font-weight-bold" data-toggle="modal" data-target="#trailer">WATCH TRAILER</button>
         </div>
@@ -107,7 +106,7 @@
             </div>
             <div class="modal-body">
                 <div class="embed-responsive embed-responsive-16by9">
-                    @* @{
+                    @{
                         //I am isolating a piece of data in order to use it as my embed source
                         string key = Model.TrailerUrl!.Split("=").Last();
                         var source = $"https://www.youtube.com/embed/{key}";
@@ -116,7 +115,7 @@
                     <iframe width="560" height="315" src="@source" 
                             title="YouTube video player" frameborder="0" 
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                            allowfullscreen></iframe> *@
+                            allowfullscreen></iframe>
 
                 </div>
             </div>
@@ -126,4 +125,3 @@
         </div>
     </div>
 </div>
-}
