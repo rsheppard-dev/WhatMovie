@@ -9,7 +9,6 @@ using WhatMovie.Services.Interfaces;
 
 namespace WhatMovie.Controllers
 {
-    [Route("[controller]")]
     public class MoviesController : Controller
     {
         private readonly ILogger<MoviesController> _logger;
